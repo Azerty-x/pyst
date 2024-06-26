@@ -8,7 +8,6 @@ class Server(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-        print(self.path)
         path = self.path.split("?")[0]
         if path in self.routes:
             self.routes[path](self)
@@ -34,10 +33,20 @@ class Server(BaseHTTPRequestHandler):
 
 
 def render(handler, path="/", **options):
+    print(path)
+    args = {}
     try:
         with open(f"./src{path}/index.html") as f:
             template = Template(f.read())
-            handler.wfile.write(bytes(template.render(), "utf-8"))
+            p = handler.path.split("?")
+            if len(p)>1:
+                args_brut = p[1].split("&")
+                for arg in args_brut:
+                    tmp_arg = arg.split("=")
+                    args[tmp_arg[0]] = tmp_arg[1]
+                handler.wfile.write(bytes(template.render(**args), "utf-8"))
+            else:
+                handler.wfile.write(bytes(template.render(), "utf-8"))
     except FileNotFoundError:
         handler.wfile.write(bytes("""<html>
 <head>
