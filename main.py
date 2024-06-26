@@ -1,4 +1,3 @@
-from jinja2 import Template
 from app.app import Server, render
 from http.server import HTTPServer
 
