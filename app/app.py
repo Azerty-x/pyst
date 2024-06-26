@@ -31,6 +31,14 @@ class Server(BaseHTTPRequestHandler):
             return func
         return decorator
 
+def get_args(handler):
+    args = {}
+    args_brut = handler.path.split("?")[1]
+    args_dev = args_brut.split("&")
+    for arg in args_dev:
+        tmp_arg = arg.split("=")
+        args[tmp_arg[0]] = tmp_arg[1]
+    return args
 
 def render(handler, path="/", **options):
     args = options
