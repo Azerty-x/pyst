@@ -5,21 +5,27 @@ from jinja2 import Template
 class Server(BaseHTTPRequestHandler):
     routes = {}
     def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        path = self.path.split("?")[0]
-        if path in self.routes:
-            self.routes[path](self)
+        if (".png" in self.path) or (".jpeg" in self.path) or (".ico" in self.path):
+            self.send_response(200)
+            self.send_header("Content-type", "image/*")
+            self.end_headers()
+            self.wfile.write(load_binary(self.path))
         else:
-            self.wfile.write(bytes("""<html>
-<head>
-    <title>Page not found</title>
-</head>
-<body>
-    <h1>Error 404</h1>
-</body>
-</html>""", "utf-8"))
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            path = self.path.split("?")[0]
+            if path in self.routes:
+                self.routes[path](self)
+            else:
+                self.wfile.write(bytes("""<html>
+    <head>
+        <title>Page not found</title>
+    </head>
+    <body>
+        <h1>Error 404</h1>
+    </body>
+    </html>""", "utf-8"))
 
     
 
@@ -39,6 +45,11 @@ def get_args(handler):
         tmp_arg = arg.split("=")
         args[tmp_arg[0]] = tmp_arg[1]
     return args
+
+def load_binary(filename):
+    with open(f".{filename}", "rb") as f:
+        return f.read()
+
 
 def render(handler, path="/", **options):
     args = options
