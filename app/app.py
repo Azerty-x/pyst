@@ -33,8 +33,7 @@ class Server(BaseHTTPRequestHandler):
 
 
 def render(handler, path="/", **options):
-    print(path)
-    args = {}
+    args = options
     try:
         with open(f"./src{path}/index.html") as f:
             template = Template(f.read())
