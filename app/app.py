@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from jinja2 import Template
-
+from urllib.parse import unquote_plus
 
 class Server(BaseHTTPRequestHandler):
     routes = {}
@@ -67,7 +67,7 @@ def get_body(handler):
     tmp_args = post_body.decode("UTF-8").split("&")
     for arg in tmp_args:
         tmp_arg = arg.split("=")
-        args[tmp_arg[0]] = tmp_arg[1]
+        args[tmp_arg[0]] = unquote_plus(tmp_arg[1])
     return args
 
 def load_binary(filename):
